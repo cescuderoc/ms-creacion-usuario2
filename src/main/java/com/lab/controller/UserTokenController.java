@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.lab.dto.UserToken;
+import com.lab.dto.UserTokenDto;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -19,10 +19,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class UserTokenController {
 
 	@PostMapping("obtenerToken")
-	public UserToken login(@RequestParam("user") String username, @RequestParam("password") String pwd) {
+	public UserTokenDto login(@RequestParam("user") String username, @RequestParam("password") String pwd) {
 		
 		String token = getJWTToken(username);
-		UserToken user = new UserToken();
+		UserTokenDto user = new UserTokenDto();
 		user.setUser(username);
 		user.setToken(token);		
 		return user;

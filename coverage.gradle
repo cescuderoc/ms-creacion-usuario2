@@ -1,0 +1,52 @@
+def jacocoExcludes = [
+	'/com/lab/*.*',
+    '/com/lab/configuration/**',
+    '/com/lab/controller/**',
+    '/com/lab/dto/**',
+    '/com/lab/model/**',
+    '/com/lab/repository/**',
+    '/com/lab/security/**'
+]
+
+jacocoTestReport {
+	getExecutionData().from(fileTree(dir: "${buildDir}/jacoco", include: '**/*.exec'))
+	reports {
+		xml.enabled true
+		html.destination file("${buildDir}/jacocoHtml")
+	}
+	afterEvaluate {
+		getClassDirectories().setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: jacocoExcludes)
+		}))
+	}
+}
+
+jacocoTestCoverageVerification {
+	afterEvaluate {
+		getClassDirectories().setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: jacocoExcludes)
+		}))
+	}
+	violationRules {
+		rule {
+			enabled = true
+			limit {
+				counter = 'BRANCH'
+				value = 'COVEREDRATIO'
+				minimum = 0.85
+			}
+		}
+		rule {
+			enabled = true
+			limit {
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
+				minimum = 0.8
+			}
+		}
+
+	}
+}
+jacocoTestReport {
+	dependsOn test
+}

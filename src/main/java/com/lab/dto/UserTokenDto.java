@@ -1,6 +1,6 @@
 package com.lab.dto;
 
-public class UserToken {
+public class UserTokenDto {
 
 	private String user;
 	private String pwd;

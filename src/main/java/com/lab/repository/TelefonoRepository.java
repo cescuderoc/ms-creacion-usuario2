@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.lab.model.TelefonoModel;
 
-public interface IngresaTelefonoRepository extends JpaRepository<TelefonoModel, Long>{
- 
+public interface TelefonoRepository extends JpaRepository<TelefonoModel, Long> {
+
 }
