@@ -1,0 +1,6 @@
+test {
+	useJUnitPlatform()
+	systemProperty "spock.configuration", "src/test/resources/SpockConfig.groovy"
+	systemProperty "file.encoding", "UTF-8"
+}
+

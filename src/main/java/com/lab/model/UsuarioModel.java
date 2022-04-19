@@ -26,7 +26,7 @@ public class UsuarioModel {
     @Column(name = "USR_ID")
 	private Long usuarioId;
 	
-    @Column(name = "USR_EMAIL")
+    @Column(name = "USR_EMAIL",unique=true)
     private String email;
     
     @Column(name = "USR_PASSWORD")
