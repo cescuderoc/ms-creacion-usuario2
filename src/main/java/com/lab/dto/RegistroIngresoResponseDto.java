@@ -26,4 +26,5 @@ public class RegistroIngresoResponseDto {
 	
 	private boolean isactive;
 	
+	private String message;
 }

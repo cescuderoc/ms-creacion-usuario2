@@ -7,7 +7,7 @@ import com.lab.dto.RegistroIngresoResponseDto;
 
 public interface UsuarioService {
 
-	List<RegistroIngresoResponseDto> obtenerListaUsuarios();
+	List<RegistroIngresoResponseDto> obtenerListaUsuarios() throws Exception;
 
 	RegistroIngresoResponseDto registroIngresoUsuario(IngresoUsuarioRequestDto ingresoUsuarioDto) throws Exception;
 }

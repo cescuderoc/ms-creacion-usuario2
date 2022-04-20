@@ -1,25 +1,17 @@
 package com.lab.service
 
+import com.lab.dto.IngresoUsuarioRequestDto
 import com.lab.dto.RegistroIngresoResponseDto
-
-
-import static org.junit.jupiter.api.Assertions.*
-
-import org.hibernate.type.descriptor.java.DataHelper
-
-import spock.lang.Subject
-
-import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-
+import com.lab.dto.UsuarioPhonesDto
+import com.lab.model.TelefonoModel
 import com.lab.model.UsuarioModel
-import com.lab.model.UsuarioModel2
 import com.lab.repository.TelefonoRepository
 import com.lab.repository.UsuarioRepository
 import com.lab.util.UtilUsuarioService
 
 import spock.lang.Narrative
 import spock.lang.Specification
+import spock.lang.Subject
 import spock.lang.Title
 
 @Title("Test unitarios para la logica de usuarios")
@@ -31,6 +23,7 @@ Contiene metodos para obtener el detalle de un usuario
 class UsuarioServiceSpec extends Specification {
 	
 	def usuarioRepository;
+	def telefonoRepository;
 	def utilUsuarioService;
 	
 	def usuarioService;
@@ -38,13 +31,14 @@ class UsuarioServiceSpec extends Specification {
 	def setup() {
 		//Mocks
 		usuarioRepository = Mock(UsuarioRepository.class)
+		telefonoRepository =Mock(TelefonoRepository.class)
 		utilUsuarioService = Mock(UtilUsuarioService.class);
 		//Interface / Class being tested / Injections
-		usuarioService = new UsuarioServiceImpl(usuarioRepository)
+		usuarioService = new UsuarioServiceImpl(usuarioRepository,telefonoRepository,utilUsuarioService)
 	}
 	
-	def "Registro ingreso responseDto" () {
-		given: "ingreso usuario"
+	def "Obtener lista usuarios" () {
+		given: "obtener Lista"
 			
 			def usuarioModel = new UsuarioModel()
 			usuarioModel.setUsuarioId(1)
@@ -57,7 +51,7 @@ class UsuarioServiceSpec extends Specification {
 			
 			1 * usuarioRepository.findAll() >> listaUsuarioModel
 		
-		when: "Se intenta obtener el resumen, es decir, nombre y correo"
+		when: "Se intenta obtener el resumen, es decir nombre y correo"
 			List<RegistroIngresoResponseDto> lista1 = usuarioService.obtenerListaUsuarios();
 		
 		then: "se obtiene lista usuarios"
@@ -65,26 +59,68 @@ class UsuarioServiceSpec extends Specification {
 		
 	}
 	
-	def "Obtener listado usuario" () {
-		given: "listado usuario"
+	def "Registro ingreso usuario" () {
+		given: "Ingresar usuario"
+		  	
+//			def usuarioId = utilUsuarioService.newAccountId();
+					
+			List<UsuarioPhonesDto> listaTelefonos = buildList(
+				buildUsuarioPhonesDto("82852323", "9", "56"),
+				buildUsuarioPhonesDto("82855555", "5", "61")				
+			)
 			
-			def usuarioModel = new UsuarioModel()
-			usuarioModel.setUsuarioId(1)
-			usuarioModel.setName("John")
-			usuarioModel.setEmail("Doe@test.cl")
+			IngresoUsuarioRequestDto ingresoUsuarioDto = IngresoUsuarioRequestDto.builder()
+			.email("aassa@a.cl")
+			.password("Enero22")
+			.phones(listaTelefonos)
+			.name("Chris").build();
+					
+			UsuarioModel usuarioModel = UsuarioModel.builder()
+			.usuarioId(123)
+			.email("a@a.cl")
+			.name("Chris")
+			.password("Enero21")
+			.created(utilUsuarioService.obtenerFecha().toString())
+			.modified(utilUsuarioService.obtenerFecha().toString())
+			.lastLogin(utilUsuarioService.obtenerFecha().toString())
+			.token("sdfsefev44")
+			.isActive(true).build();
+			usuarioRepository.save(usuarioModel);
 			
-			def List<UsuarioModel> listaUsuarioModel =new ArrayList();
+			TelefonoModel telefonoModel = TelefonoModel.builder()
+			.usuarioId(123)
+			.number("82852323")
+			.citycode("9")
+			.contrycode("56").build();
+			telefonoRepository.save(telefonoModel);
 			
-			listaUsuarioModel.add(usuarioModel)
-			
-			1 * usuarioRepository.findAll() >> listaUsuarioModel
+		when: "Se intenta obtener registro de usuario y telefono"
 		
-		when: "Se intenta obtener el resumen, es decir, nombre y correo"
-			List<RegistroIngresoResponseDto> lista1 = usuarioService.obtenerListaUsuarios();
+//			usuarioService.registroIngresoUsuario(ingresoUsuarioDto)
+			
 		
-		then: "se obtiene lista usuarios"
-			lista1 != null
+		then: "validamos respuesta del registro"
+			1==1
 		
+	}
+	
+	
+	/**
+	 * Instancia un nuevo objeto de tipo UsuarioPhonesDto
+	 * @return UsuarioPhonesDto
+	 */
+	def buildUsuarioPhonesDto(String number, String citycode, String contrycode) {
+		UsuarioPhonesDto telefonos = new UsuarioPhonesDto()
+		telefonos.setNumber(number)
+		telefonos.setCitycode(citycode)
+		telefonos.setContrycode(contrycode)
+		return telefonos
+	}
+	
+	def buildList(UsuarioPhonesDto... telefonos) {
+		List<UsuarioPhonesDto> listaTelefonos = new ArrayList<>()
+		Collections.addAll(listaTelefonos, telefonos)
+		return listaTelefonos
 	}
 
 }

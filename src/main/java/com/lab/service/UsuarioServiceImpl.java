@@ -3,12 +3,13 @@ package com.lab.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.lab.dto.IngresoUsuarioRequestDto;
 import com.lab.dto.RegistroIngresoResponseDto;
 import com.lab.dto.UsuarioPhonesDto;
+import com.lab.exception.ClaveInvalidaException;
+import com.lab.exception.EmailException;
 import com.lab.model.TelefonoModel;
 import com.lab.model.UsuarioModel;
 import com.lab.repository.TelefonoRepository;
@@ -23,15 +24,13 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	private final UsuarioRepository usuarioRepository;
 	
-	@Autowired
-	private TelefonoRepository telefonoRepository;
-
-	@Autowired
-	private UtilUsuarioService utilUsuarioService;
+	private final TelefonoRepository telefonoRepository;
+	
+	private final UtilUsuarioService utilUsuarioService;
 
 	@Override
-	public List<RegistroIngresoResponseDto> obtenerListaUsuarios() {
-
+	public List<RegistroIngresoResponseDto> obtenerListaUsuarios() throws Exception {
+		
 		List<UsuarioModel> listaUsuarioModel = usuarioRepository.findAll();
 		List<RegistroIngresoResponseDto> listaUsuario = new ArrayList<RegistroIngresoResponseDto>();
 		for (UsuarioModel str : listaUsuarioModel) {
@@ -49,15 +48,14 @@ public class UsuarioServiceImpl implements UsuarioService {
 	@Override
 	public RegistroIngresoResponseDto registroIngresoUsuario(IngresoUsuarioRequestDto ingresoUsuarioDto)
 			throws Exception {
-
 		try {
 
 			boolean validaPass = utilUsuarioService.validacionClave(ingresoUsuarioDto.getPassword());
 			UsuarioModel existeEmail = usuarioRepository.findByEmail(ingresoUsuarioDto.getEmail());
 	        if (!validaPass) {
-	        	throw new Exception("Clave no cumple con los requisitos: " + ingresoUsuarioDto.getPassword());
+	        	throw new ClaveInvalidaException("Clave no cumple con los requisitos: " + ingresoUsuarioDto.getPassword());
 	        }else if(existeEmail!=null) {
-	        	throw new Exception("Email existe en la BD: " + ingresoUsuarioDto.getEmail());
+	        	throw new EmailException("Email existe en la BD: " + ingresoUsuarioDto.getEmail());
 	        }
 			
 			Long usuarioId = utilUsuarioService.newAccountId();
