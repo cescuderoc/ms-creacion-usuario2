@@ -7,6 +7,8 @@ import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Component;
 
+import com.lab.dto.RegistroIngresoResponseDto;
+
 @Component
 public class UtilUsuarioService {
 
@@ -29,6 +31,13 @@ public class UtilUsuarioService {
 		} else {
 			return false;
 		}
+	}
+	
+	public RegistroIngresoResponseDto generarMensajeError(Exception e) {
+		RegistroIngresoResponseDto response = new RegistroIngresoResponseDto();
+		response.setCreated("NO");
+		response.setMessage(e.getMessage());
+		return response;
 	}
 
 }
